@@ -1,1 +1,394 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0b0e15">
+<title>PHONE FLIP — Phone Market</title>
+<style>
+:root {
+  --bg:#0b0e15; --panel:#141925; --panel2:#1b2230;
+  --line:#2a3345; --text:#f4f6fc; --muted:#929db1;
+  --purple:#8968ff; --green:#70e6a0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Inter,Arial,sans-serif;font-size:14px}
+button,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 13px;
+background:var(--purple);color:white;font-weight:700}
+button:disabled{opacity:.4;cursor:not-allowed}
+.rotate{display:none}
+.app{max-width:1500px;margin:auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;
+gap:14px;border-bottom:1px solid var(--line);padding-bottom:15px}
+.logo{font-size:24px;font-weight:950;letter-spacing:1px}
+.logo span{color:var(--purple)}
+.header-right{display:flex;align-items:center;gap:12px}
+.balance{background:#17251f;color:var(--green);padding:12px 16px;
+border:1px solid #284a38;border-radius:12px;font-weight:800}
+.profile{background:var(--panel2);padding:10px 14px;border-radius:12px}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr);
+gap:16px;margin-top:16px}
+.sidebar,.main{background:var(--panel);border:1px solid var(--line);
+border-radius:16px;padding:16px;min-width:0}
+.city{color:var(--muted);font-size:12px;line-height:1.6}
+.menu{display:grid;gap:8px;margin-top:20px}
+.menu button{text-align:left;background:var(--panel2);color:#b9c3d5}
+.menu button.active{background:#342958;color:white}
+.main-head{display:flex;align-items:center;justify-content:space-between;
+gap:12px;flex-wrap:wrap;margin-bottom:15px}
+h1{font-size:22px;margin:0 0 5px}
+h2{font-size:16px;margin:0 0 10px}
+.muted{color:var(--muted);font-size:12px;line-height:1.5}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);
+border-radius:9px;padding:10px;max-width:180px}
+.catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.phone-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;
+background:linear-gradient(155deg,#202839,#151a26);min-width:0}
+.phone-visual{height:155px;display:flex;align-items:center;justify-content:center;
+position:relative;background:radial-gradient(ellipse,#343b54,#171c29 70%)}
+.device{height:120px;width:62px;border-radius:15px;border:3px solid #69758b;
+background:linear-gradient(135deg,#39465d,#111722);
+position:relative;box-shadow:0 12px 25px #0008}
+.device:before{content:"";position:absolute;top:5px;left:50%;transform:translateX(-50%);
+width:20px;height:5px;border-radius:5px;background:#080a0e}
+.device .cam{position:absolute;top:9px;left:7px;width:23px;height:35px;
+border-radius:8px;background:#111824;border:1px solid #738097}
+.device .cam:after{content:"";position:absolute;left:4px;top:4px;width:8px;height:8px;
+border-radius:50%;background:#293e67;border:1px solid #93a5c7;
+box-shadow:10px 0 #283b61,5px 13px #283b61}
+.device .screen{position:absolute;inset:10px 4px 4px;border-radius:10px;
+background:linear-gradient(160deg,#9e7aff,#293b68 55%,#0c1525)}
+.device.apple{border-radius:17px}
+.device.samsung{border-radius:12px}
+.device.xiaomi{border-radius:14px}
+.device.huawei{border-radius:15px}
+.device.redmi{border-radius:12px}
+.device.apple .cam{width:30px;height:30px}
+.device.apple .cam:after{width:8px;height:8px;box-shadow:11px 0 #283b61,5px 11px #283b61}
+.phone-visual .tag{position:absolute;top:10px;left:10px;background:#ffffff12;
+border:1px solid #ffffff22;padding:5px 8px;border-radius:7px;font-size:10px}
+.card-body{padding:12px}
+.brand{color:#b8a7ff;font-size:10px;font-weight:800;text-transform:uppercase;
+letter-spacing:1px}
+.phone-card h3{font-size:15px;margin:5px 0 8px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}
+.spec{background:#ffffff06;border-radius:8px;padding:8px;min-width:0}
+.spec small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}
+.spec strong{font-size:12px;overflow-wrap:anywhere}
+.battery-line{height:5px;background:#303747;border-radius:5px;overflow:hidden;margin-top:6px}
+.battery-line div{height:100%;background:var(--green);border-radius:5px}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:8px;
+margin-top:12px}
+.price{font-size:19px;font-weight:900}
+.buy{width:100%;margin-top:10px}
+.buy:hover{filter:brightness(1.12)}
+.empty{padding:35px 15px;text-align:center;border:1px dashed var(--line);
+border-radius:12px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--panel2);border-radius:12px;padding:13px}
+.stat small{color:var(--muted);display:block;margin-bottom:7px}
+.stat strong{font-size:19px}
+.bottom{display:none}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+padding:12px 18px;background:#272b3c;border:1px solid #4a5167;
+border-radius:12px;display:none;z-index:5;white-space:nowrap}
+@media(orientation:portrait){
+ body{overflow:hidden}
+ .app{display:none}
+ .rotate{position:fixed;inset:0;display:flex;align-items:center;
+ justify-content:center;flex-direction:column;text-align:center;padding:25px;
+ background:var(--bg)}
+ .rotate div:first-child{font-size:60px}
+ .rotate p{color:var(--muted);max-width:270px;line-height:1.6}
+}
+@media(orientation:landscape) and (max-height:520px){
+ .app{padding:9px 12px}
+ header{padding-bottom:9px}
+ .logo{font-size:20px}
+ .layout{grid-template-columns:165px minmax(0,1fr);gap:10px;margin-top:10px}
+ .sidebar,.main{padding:10px}
+ .menu{margin-top:12px;gap:5px}
+ .menu button{padding:8px;font-size:12px}
+ .catalog{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .phone-visual{height:95px}
+ .device{transform:scale(.78)}
+ .card-body{padding:9px}
+ .phone-card h3{font-size:13px}
+ .specs{gap:5px;margin:8px 0}
+ .spec{padding:6px}
+ .price{font-size:16px}
+ .buy{padding:8px}
+}
+@media(min-width:1200px){
+ .catalog{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+<div class="rotate">
+  <div>📱</div>
+  <h2>Поверни телефон горизонтально</h2>
+  <p>PHONE FLIP создана для игры в альбомной ориентации.</p>
+</div>
+
+<div class="app">
+<header>
+  <div class="logo">PHONE <span>FLIP</span></div>
+  <div class="header-right">
+    <div class="profile">🏙️ Ростов-на-Дону</div>
+    <div class="balance" id="balance">₽25 000</div>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <h2>Перекупщик</h2>
+  <div class="city">Уровень 1 · Новичок<br>Твоя карьера начинается!</div>
+  <nav class="menu">
+    <button class="active" data-page="market">🛒 Рынок</button>
+    <button data-page="inventory">📦 Мой склад</button>
+    <button data-page="sales">💸 Продажи</button>
+    <button data-page="profile">👤 Профиль</button>
+  </nav>
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+  <div class="muted">Подсказка: следи за состоянием телефона и батареей перед покупкой.</div>
+</aside>
+
+<section class="main" id="main">
+  <div class="main-head">
+    <div>
+      <h1>Рынок телефонов</h1>
+      <div class="muted">Выбирай устройства для своей будущей коллекции.</div>
+    </div>
+    <div class="filters">
+      <select id="brandFilter" aria-label="Фильтр по бренду">
+        <option value="all">Все бренды</option>
+        <option>Apple</option><option>Samsung</option>
+        <option>Xiaomi</option><option>Redmi</option><option>Huawei</option>
+      </select>
+      <select id="sortFilter" aria-label="Сортировка">
+        <option value="default">По умолчанию</option>
+        <option value="cheap">Сначала дешевле</option>
+        <option value="expensive">Сначала дороже</option>
+        <option value="battery">Лучшая батарея</option>
+      </select>
+    </div>
+  </div>
+  <div class="catalog" id="catalog"></div>
+</section>
+</div>
+<div id="toast"></div>
+</div>
+
+<script>
+const initialPhones = [
+ {id:1,brand:"Apple",name:"iPhone 11",memory:64,price:14500,condition:"Хорошее",battery:84,color:"#8195bd"},
+ {id:2,brand:"Apple",name:"iPhone 12",memory:128,price:22000,condition:"Отличное",battery:91,color:"#80a6dc"},
+ {id:3,brand:"Apple",name:"iPhone 13",memory:128,price:31000,condition:"Хорошее",battery:88,color:"#b4a1df"},
+ {id:4,brand:"Apple",name:"iPhone 14",memory:128,price:39000,condition:"Отличное",battery:96,color:"#c5a1d8"},
+ {id:5,brand:"Samsung",name:"Galaxy A54",memory:128,price:18500,condition:"Хорошее",battery:93,color:"#8ab8a5"},
+ {id:6,brand:"Samsung",name:"Galaxy S21",memory:128,price:24000,condition:"Удовлетворительное",battery:79,color:"#b2a2dc"},
+ {id:7,brand:"Samsung",name:"Galaxy S22",memory:256,price:32500,condition:"Хорошее",battery:89,color:"#9db9e5"},
+ {id:8,brand:"Xiaomi",name:"Xiaomi 12",memory:128,price:19500,condition:"Хорошее",battery:90,color:"#d3a16e"},
+ {id:9,brand:"Xiaomi",name:"Xiaomi 13",memory:256,price:29500,condition:"Отличное",battery:96,color:"#8bbda7"},
+ {id:10,brand:"Redmi",name:"Redmi Note 12",memory:128,price:11500,condition:"Хорошее",battery:94,color:"#8eacd0"},
+ {id:11,brand:"Redmi",name:"Redmi Note 13",memory:256,price:15500,condition:"Отличное",battery:98,color:"#a6c6a1"},
+ {id:12,brand:"Huawei",name:"Huawei P30",memory:128,price:12500,condition:"Удовлетворительное",battery:76,color:"#d6a4a1"},
+ {id:13,brand:"Huawei",name:"Huawei P40",memory:256,price:21500,condition:"Хорошее",battery:87,color:"#8ea5ca"},
+ {id:14,brand:"Huawei",name:"Huawei Nova 10",memory:128,price:17500,condition:"Отличное",battery:95,color:"#b9a0db"}
+];
+
+let balance = 25000;
+let inventory = [];
+let sales = [];
+let experience = 0;
+let page = "market";
+let toastTimer;
+
+const $ = id => document.getElementById(id);
+const money = n => "₽" + Math.round(n).toLocaleString("ru-RU");
+
+function save(){
+  localStorage.setItem("phoneFlipV1",JSON.stringify({
+    balance,inventory,sales,experience
+  }));
+}
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem("phoneFlipV1"));
+    if(s){
+      balance=Number(s.balance ?? 25000);
+      inventory=Array.isArray(s.inventory)?s.inventory:[];
+      sales=Array.isArray(s.sales)?s.sales:[];
+      experience=Number(s.experience ?? 0);
+    }
+  }catch(e){}
+  updateBalance();
+}
+function updateBalance(){
+  $("balance").textContent="💰 "+money(balance);
+}
+function notify(message){
+  const t=$("toast");
+  t.textContent=message;
+  t.style.display="block";
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.style.display="none",2200);
+}
+function deviceClass(brand){
+  return ({
+    Apple:"apple",Samsung:"samsung",Xiaomi:"xiaomi",
+    Redmi:"redmi",Huawei:"huawei"
+  })[brand]||"";
+}
+function phoneCard(p,owned=false,index=-1){
+  const disabled=owned?"":"";
+  return `
+  <article class="phone-card">
+    <div class="phone-visual" style="background:radial-gradient(ellipse,${p.color}55,#171c29 72%)">
+      <div class="tag">${p.condition}</div>
+      <div class="device ${deviceClass(p.brand)}" style="border-color:${p.color}">
+        <div class="screen" style="background:linear-gradient(155deg,${p.color},#25314b 65%,#0b1020)"></div>
+        <div class="cam"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="brand">${p.brand}</div>
+      <h3>${p.name}</h3>
+      <div class="muted">Память: ${p.memory} ГБ</div>
+      <div class="specs">
+        <div class="spec">
+          <small>Состояние</small>
+          <strong>${p.condition}</strong>
+        </div>
+        <div class="spec">
+          <small>Батарея</small>
+          <strong>${p.battery}%</strong>
+          <div class="battery-line"><div style="width:${p.battery}%"></div></div>
+        </div>
+      </div>
+      <div class="price-row">
+        <span class="muted">Цена</span>
+        <span class="price">${money(p.price)}</span>
+      </div>
+      ${owned
+        ? `<button class="buy" onclick="sellPhone(${index})">Продать · ${money(Math.round(p.price*0.9))}</button>`
+        : `<button class="buy" onclick="buyPhone(${p.id})" ${balance<p.price?"disabled":""}>Купить</button>`}
+    </div>
+  </article>`;
+}
+function renderMarket(){
+  const brand=$("brandFilter").value;
+  const sort=$("sortFilter").value;
+  let list=initialPhones.filter(p=>brand==="all"||p.brand===brand);
+  if(sort==="cheap")list.sort((a,b)=>a.price-b.price);
+  if(sort==="expensive")list.sort((a,b)=>b.price-a.price);
+  if(sort==="battery")list.sort((a,b)=>b.battery-a.battery);
+  $("main").innerHTML=`
+    <div class="main-head">
+      <div><h1>Рынок телефонов</h1><div class="muted">Найдено устройств: ${list.length}</div></div>
+      <div class="filters">
+        <select id="brandFilter">
+          <option value="all">Все бренды</option>
+          ${["Apple","Samsung","Xiaomi","Redmi","Huawei"].map(b=>`<option ${brand===b?"selected":""}>${b}</option>`).join("")}
+        </select>
+        <select id="sortFilter">
+          <option value="default" ${sort==="default"?"selected":""}>По умолчанию</option>
+          <option value="cheap" ${sort==="cheap"?"selected":""}>Сначала дешевле</option>
+          <option value="expensive" ${sort==="expensive"?"selected":""}>Сначала дороже</option>
+          <option value="battery" ${sort==="battery"?"selected":""}>Лучшая батарея</option>
+        </select>
+      </div>
+    </div>
+    <div class="catalog">${list.map(p=>phoneCard(p)).join("")||'<div class="empty">Телефонов нет</div>'}</div>`;
+  $("brandFilter").addEventListener("change",renderMarket);
+  $("sortFilter").addEventListener("change",renderMarket);
+}
+function buyPhone(id){
+  const p=initialPhones.find(x=>x.id===id);
+  if(!p)return;
+  if(inventory.some(x=>x.id===id && x.uid)){
+    // Repeated purchases are allowed; each item receives its own inventory ID.
+  }
+  if(balance<p.price){notify("Недостаточно денег!");return;}
+  balance-=p.price;
+  inventory.push({...p,uid:Date.now()+Math.random()});
+  experience+=5;
+  updateBalance();save();notify("Куплен "+p.name+"!");
+  renderMarket();
+}
+function renderInventory(){
+  $("main").innerHTML=`
+    <div class="main-head"><div><h1>📦 Мой склад</h1>
+    <div class="muted">Твои купленные телефоны: ${inventory.length}</div></div></div>
+    ${inventory.length
+      ? `<div class="catalog">${inventory.map((p,i)=>phoneCard(p,true,i)).join("")}</div>`
+      : `<div class="empty"><h2>Склад пуст</h2>Купи телефон на рынке, чтобы он появился здесь.</div>`}`;
+}
+function sellPhone(index){
+  const p=inventory[index];
+  if(!p)return;
+  const price=Math.round(p.price*0.9);
+  balance+=price;
+  sales.push({name:p.name,price,date:new Date().toLocaleDateString("ru-RU")});
+  inventory.splice(index,1);
+  experience+=10;
+  updateBalance();save();notify("Продано за "+money(price));
+  renderInventory();
+}
+function renderSales(){
+  $("main").innerHTML=`
+    <h1>💸 История продаж</h1>
+    <p class="muted">Количество сделок: ${sales.length}</p>
+    <div class="stats">
+      <div class="stat"><small>Продаж</small><strong>${sales.length}</strong></div>
+      <div class="stat"><small>Выручка</small><strong>${money(sales.reduce((a,s)=>a+s.price,0))}</strong></div>
+      <div class="stat"><small>Опыт</small><strong>${experience} XP</strong></div>
+    </div>
+    ${sales.length
+      ? [...sales].reverse().map(s=>`<div class="spec" style="margin-bottom:8px"><strong>${s.name}</strong><br><span class="muted">${s.date}</span><strong style="float:right;color:var(--green)">${money(s.price)}</strong></div>`).join("")
+      : '<div class="empty">Пока нет продаж. Купи и продай первый телефон!</div>'}`;
+}
+function renderProfile(){
+  $("main").innerHTML=`
+    <h1>👤 Профиль перекупщика</h1>
+    <div class="stats">
+      <div class="stat"><small>Баланс</small><strong>${money(balance)}</strong></div>
+      <div class="stat"><small>Телефонов на складе</small><strong>${inventory.length}</strong></div>
+      <div class="stat"><small>Опыт</small><strong>${experience} XP</strong></div>
+    </div>
+    <div class="panel">
+      <h2>Новичок</h2>
+      <p class="muted">Покупай устройства, следи за состоянием и батареей, затем продавай их. Это первая версия системы торговли.</p>
+      <button onclick="resetGame()">Начать заново</button>
+    </div>`;
+}
+function resetGame(){
+  if(!confirm("Удалить сохранение и начать заново?"))return;
+  balance=25000;inventory=[];sales=[];experience=0;
+  save();updateBalance();showPage("market");
+  notify("Новая игра началась");
+}
+function showPage(next){
+  page=next;
+  document.querySelectorAll(".menu button").forEach(b=>{
+    b.classList.toggle("active",b.dataset.page===next);
+  });
+  if(next==="market")renderMarket();
+  if(next==="inventory")renderInventory();
+  if(next==="sales")renderSales();
+  if(next==="profile")renderProfile();
+}
+document.querySelectorAll(".menu button").forEach(b=>{
+  b.addEventListener("click",()=>showPage(b.dataset.page));
+});
+load();
+renderMarket();
+</script>
+</body>
+</html>
+
